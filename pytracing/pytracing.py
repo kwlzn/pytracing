@@ -22,6 +22,7 @@ class TraceProfiler(object):
 
   """
   TYPES = {'call': 'B', 'return': 'E'}
+  WRITE_LOCK = threading.Lock()
 
   def __init__(self, output, clock=None):
     self._output = output
@@ -55,24 +56,24 @@ class TraceProfiler(object):
                  caller_filename, caller_line_no):
     """Write a trace event to the output stream."""
     timestamp = to_microseconds(self.clock())
-    self._output.write(
-      json.dumps(
-        # https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
-        dict(
-          name=func_name,               # Event Name.
-          cat=func_filename,            # Event Category.
-          tid=self.thread_id,           # Thread ID.
-          ph=self.TYPES[event_type],    # Event Type.
-          pid=self.pid,                 # Process ID.
-          ts=timestamp,                 # Timestamp.
-          args=dict(
-            function=':'.join([str(x) for x in (func_filename, func_line_no, func_name)]),
-            caller=':'.join([str(x) for x in (caller_filename, caller_line_no)]),
-          )
-        )
-      )
-    )
-    self._output.write(',\n')
+    # https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
+    event = json.dumps(
+              dict(
+                name=func_name,               # Event Name.
+                cat=func_filename,            # Event Category.
+                tid=self.thread_id,           # Thread ID.
+                ph=self.TYPES[event_type],    # Event Type.
+                pid=self.pid,                 # Process ID.
+                ts=timestamp,                 # Timestamp.
+                args=dict(
+                  function=':'.join([str(x) for x in (func_filename, func_line_no, func_name)]),
+                  caller=':'.join([str(x) for x in (caller_filename, caller_line_no)]),
+                )
+              )
+            )
+
+    with self.WRITE_LOCK:
+      self._output.write(event + ',\n')
 
   def tracer(self, frame, event_type, arg):
     """Bound tracer function for sys.settrace()."""
