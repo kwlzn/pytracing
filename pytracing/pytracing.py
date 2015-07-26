@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import json
 import os
 import sys
@@ -32,6 +33,13 @@ class TraceProfiler(object):
   @property
   def thread_id(self):
     return threading.current_thread().name
+
+  @contextmanager
+  def traced(self):
+    """Context manager for install/shutdown in a with block."""
+    self.install()
+    yield
+    self.shutdown()
 
   def install(self):
     """Install the trace function and open the JSON output stream."""

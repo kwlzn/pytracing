@@ -8,3 +8,11 @@ a python trace profiler that outputs to chrome trace-viewer format (about://trac
     tp.install()
     ...
     tp.shutdown()
+
+
+  alternatively, using the context manager:
+
+    from pytracing import TraceProfiler
+    tp = TraceProfiler(output=open('/tmp/trace.out', 'wb'))
+    with tp.traced():
+      ...
