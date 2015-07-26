@@ -12,9 +12,13 @@ def to_microseconds(s):
 class TraceProfiler(object):
   """A python trace profiler that outputs Chrome Trace-Viewer format (about://tracing).
 
+     Usage:
+
         from pytracing import TraceProfiler
         tp = TraceProfiler(output=open('/tmp/trace.out', 'wb'))
         tp.install()
+        ...
+        tp.shutdown()
 
   """
   TYPES = {'call': 'B', 'return': 'E'}
