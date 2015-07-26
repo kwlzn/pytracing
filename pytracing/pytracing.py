@@ -58,7 +58,7 @@ class TraceProfiler(object):
 
   def _close_collection(self):
     """Write the closing of a JSON array to the output."""
-    self._output.write(']\n')
+    self._output.write('{}\n]\n')
 
   def fire_event(self, event_type, func_name, func_filename, func_line_no,
                  caller_filename, caller_line_no):
