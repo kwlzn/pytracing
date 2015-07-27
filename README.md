@@ -22,4 +22,4 @@ a python trace profiler that outputs to chrome trace-viewer format (about://trac
 
 ## zooming
 
-![zoom](http://kwlzn.github.io/img/pytracing-screen-3b.png "zoom")
+![zoom](http://kwlzn.github.io/img/pytracing-screen-3.png "zoom")
