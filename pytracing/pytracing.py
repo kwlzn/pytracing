@@ -6,6 +6,7 @@ import sys
 import threading
 import time
 
+
 def to_microseconds(s):
   return 1000000 * float(s)
 
