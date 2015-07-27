@@ -12,14 +12,14 @@ a python trace profiler that outputs to chrome trace-viewer format (about://trac
 
 ## click to view detail
 
-![click to view detail](http://kwlzn.github.io/img/pytracing-screen-1.png "click to view detail")
+![click to view detail](http://kwlzn.github.io/img/pytracing-screenshots/screen1.png "click to view detail")
 
 
 ## selection and aggregate view
 
-![selection and aggregate view](http://kwlzn.github.io/img/pytracing-screen-2.png "selection and aggregate view")
+![selection and aggregate view](http://kwlzn.github.io/img/pytracing-screenshots/screen2.png "selection and aggregate view")
 
 
 ## zooming
 
-![zoom](http://kwlzn.github.io/img/pytracing-screen-3.png "zoom")
+![zoom](http://kwlzn.github.io/img/pytracing-screenshots/screen3.png "zoom")
