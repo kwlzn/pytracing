@@ -1,5 +1,11 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
+import io
 import time
 
 from pytracing import TraceProfiler
@@ -21,7 +27,7 @@ def main():
 
 
 if __name__ == '__main__':
-  with open('./trace.out', 'wb') as fh:
+  with io.open('./trace.out', mode='w', encoding='utf-8') as fh:
     tp = TraceProfiler(output=fh)
     tp.install()
     main()

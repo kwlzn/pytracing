@@ -1,10 +1,20 @@
-from contextlib import contextmanager
-from Queue import Queue
-import json
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import sys
-import threading
+import json
 import time
+import threading
+from contextlib import contextmanager
+
+try:
+  from queue import Queue
+except ImportError:
+  from Queue import Queue
 
 
 def to_microseconds(s):
@@ -12,6 +22,7 @@ def to_microseconds(s):
 
 
 class TraceWriter(threading.Thread):
+
   def __init__(self, terminator, input_queue, output_stream):
     threading.Thread.__init__(self)
     self.daemon = True

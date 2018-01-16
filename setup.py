@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
   name='pytracing',
-  version='0.1',
+  version='0.2',
   description='a python trace profiler that outputs to chrome trace-viewer format (about://tracing).',
   author='Kris Wilson',
   author_email='kwilson@twitter.com',
