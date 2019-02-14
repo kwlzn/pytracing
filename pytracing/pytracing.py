@@ -30,12 +30,20 @@ class TraceWriter(threading.Thread):
     self.input = input_queue
     self.output = output_stream
 
-  def run(self):
+  def _open_collection(self):
+    """Write the opening of a JSON array to the output."""
     self.output.write('[')
-    while not self.terminator.is_set():
+
+  def _close_collection(self):
+    """Write the closing of a JSON array to the output."""
+    self.output.write('{}]')  # empty {} so the final entry doesn't end with a comma
+
+  def run(self):
+    self._open_collection()
+    while not self.terminator.is_set() or not self.input.empty():
       item = self.input.get()
       self.output.write(json.dumps(item) + ',\n')
-    self.output.write('{}]')    # empty {} so the final entry doesn't end with a comma
+    self._close_collection()
 
 
 class TraceProfiler(object):
@@ -74,25 +82,15 @@ class TraceProfiler(object):
 
   def install(self):
     """Install the trace function and open the JSON output stream."""
-    # self._open_collection()  # Open the JSON output.
-    self.writer.start()  # Start the writer thread.
-    sys.setprofile(self.tracer)  # Set the trace/profile function.
+    self.writer.start()               # Start the writer thread.
+    sys.setprofile(self.tracer)        # Set the trace/profile function.
     threading.setprofile(self.tracer)  # Set the trace/profile function for threads.
 
   def shutdown(self):
-    sys.setprofile(None)  # Clear the trace/profile function.
-    threading.setprofile(None)  # Clear the trace/profile function for threads.
-    # self._close_collection()  # Close the JSON output.
-    self.terminator.set()  # Stop the writer thread.
-    self.writer.join()  # Join the writer thread.
-
-  def _open_collection(self):
-    """Write the opening of a JSON array to the output."""
-    self.queue.put('[')
-
-  def _close_collection(self):
-    """Write the closing of a JSON array to the output."""
-    self.queue.put('{}]')
+    sys.setprofile(None)                # Clear the trace/profile function.
+    threading.setprofile(None)          # Clear the trace/profile function for threads.
+    self.terminator.set()              # Stop the writer thread.
+    self.writer.join()                 # Join the writer thread.
 
   def fire_event(self, event_type, func_name, func_filename, func_line_no,
                  caller_filename, caller_line_no):
@@ -101,12 +99,12 @@ class TraceProfiler(object):
     # https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
 
     event = dict(
-      name=func_name,  # Event Name.
-      cat=func_filename,  # Event Category.
-      tid=self.thread_id,  # Thread ID.
-      ph=self.TYPES[event_type],  # Event Type.
-      pid=self.pid,  # Process ID.
-      ts=timestamp,  # Timestamp.
+      name=func_name,                 # Event Name.
+      cat=func_filename,               # Event Category.
+      tid=self.thread_id,             # Thread ID.
+      ph=self.TYPES[event_type],      # Event Type.
+      pid=self.pid,                   # Process ID.
+      ts=timestamp,                   # Timestamp.
       args=dict(
         function=':'.join([str(x) for x in (func_filename, func_line_no, func_name)]),
         caller=':'.join([str(x) for x in (caller_filename, caller_line_no)]),

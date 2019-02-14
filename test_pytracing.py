@@ -24,7 +24,7 @@ def function_b(x):
 
 def main():
   function_a(1)
-  function_b(1)
+  function_b(2)
 
 
 if __name__ == '__main__':
@@ -35,6 +35,7 @@ if __name__ == '__main__':
     tp.shutdown()
     print('wrote trace.out')
 
+  # ensure the output is at least valid JSON
   with io.open('./trace.out', encoding='utf-8') as fh:
     json.load(fh)
 
