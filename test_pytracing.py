@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import io
+import json
 import time
 
 from pytracing import TraceProfiler
@@ -22,8 +23,8 @@ def function_b(x):
 
 
 def main():
-  function_a(5)
-  function_b(15)
+  function_a(1)
+  function_b(1)
 
 
 if __name__ == '__main__':
@@ -33,3 +34,7 @@ if __name__ == '__main__':
     main()
     tp.shutdown()
     print('wrote trace.out')
+
+  with io.open('./trace.out', encoding='utf-8') as fh:
+    json.load(fh)
+
