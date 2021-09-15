@@ -28,7 +28,7 @@ def main():
 
 
 if __name__ == '__main__':
-  with io.open('./trace.out', mode='w', encoding='utf-8') as fh:
+  with io.open('./trace.out', mode='wb') as fh:
     tp = TraceProfiler(output=fh)
     tp.install()
     main()
