@@ -9,7 +9,10 @@ import sys
 import json
 import time
 import threading
+import logging
 from contextlib import contextmanager
+
+logger = logging.getLogger(__name__)
 
 try:
   from queue import Queue
@@ -32,17 +35,19 @@ class TraceWriter(threading.Thread):
 
   def _open_collection(self):
     """Write the opening of a JSON array to the output."""
-    self.output.write(b'[')
+    logger.debug('_open_collection')
+    self.output.write('[')
 
   def _close_collection(self):
     """Write the closing of a JSON array to the output."""
-    self.output.write(b'{}]')  # empty {} so the final entry doesn't end with a comma
+    logger.debug('_close_collection')
+    self.output.write('{}]')  # empty {} so the final entry doesn't end with a comma
 
   def run(self):
     self._open_collection()
     while not self.terminator.is_set() or not self.input.empty():
       item = self.input.get()
-      self.output.write((json.dumps(item) + ',\n').encode('ascii'))
+      self.output.write(json.dumps(item) + ',\n')
     self._close_collection()
 
 
