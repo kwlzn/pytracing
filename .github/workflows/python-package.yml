@@ -26,8 +26,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint
       run: |
-        pre-commit run -v -a
-        flake8 . --config=setup.cfg
+        ./lint.sh
     - name: Test with pytest
       run: |
         #pytest
