@@ -6,4 +6,4 @@ from __future__ import unicode_literals
 
 from .pytracing import TraceProfiler
 
-__all__ = ['TraceProfiler']
+__all__ = ["TraceProfiler"]
