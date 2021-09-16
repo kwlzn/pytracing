@@ -11,6 +11,7 @@ import time
 import threading
 import logging
 from contextlib import contextmanager
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ class TraceProfiler(object):
         self.queue = Queue()
         self.terminator = threading.Event()
         self.writer = TraceWriter(self.terminator, self.queue, self.output)
+        self.event_callbacks = [self._chrome_tracing_event]
 
     @property
     def thread_id(self):
@@ -97,11 +99,14 @@ class TraceProfiler(object):
         self.terminator.set()  # Stop the writer thread.
         self.writer.join()  # Join the writer thread.
 
-    def fire_event(self, event_type, func_name, func_filename, func_line_no, caller_filename, caller_line_no):
-        """Write a trace event to the output stream."""
+    def _chrome_tracing_event(
+        self, event_type, func_name, func_filename, func_line_no, caller_filename, caller_line_no
+    ) -> Dict[str, Any]:
+        """
+        Format a Chrome tracing event that can be encoded to JSON
+        https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
+        """
         timestamp = to_microseconds(self.clock())
-        # https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
-
         event = dict(
             name=func_name,  # Event Name.
             cat=func_filename,  # Event Category.
@@ -114,7 +119,13 @@ class TraceProfiler(object):
                 caller=":".join([str(x) for x in (caller_filename, caller_line_no)]),
             ),
         )
-        self.queue.put(event)
+        return event
+
+    def fire_event(self, event_type, func_name, func_filename, func_line_no, caller_filename, caller_line_no):
+        """Trigger event callbacks."""
+        for cb in self.event_callbacks:
+            event = cb(event_type, func_name, func_filename, func_line_no, caller_filename, caller_line_no)
+            self.queue.put(event)
 
     def tracer(self, frame, event_type, arg):
         """Bound tracer function for sys.settrace()."""
